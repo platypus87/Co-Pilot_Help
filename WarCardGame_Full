@@ -1,0 +1,155 @@
+using System;
+using System.Collections.Generic;
+
+namespace WarCardGame
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Deck deck = new Deck();
+            deck.Shuffle();
+
+            List<Card> player1Deck = new List<Card>();
+            List<Card> player2Deck = new List<Card>();
+
+            for (int i = 0; i < deck.Cards.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    player1Deck.Add(deck.Cards[i]);
+                }
+                else
+                {
+                    player2Deck.Add(deck.Cards[i]);
+                }
+            }
+
+            while (player1Deck.Count > 0 && player2Deck.Count > 0)
+            {
+                PlayRound(player1Deck, player2Deck);
+            }
+
+            if (player1Deck.Count > 0)
+            {
+                Console.WriteLine("Player 1 wins the game!");
+            }
+            else
+            {
+                Console.WriteLine("Player 2 wins the game!");
+            }
+        }
+
+        static void PlayRound(List<Card> player1Deck, List<Card> player2Deck)
+        {
+            Card player1Card = player1Deck;
+            Card player2Card = player2Deck;
+
+            Console.WriteLine($"Player 1 plays {player1Card}");
+            Console.WriteLine($"Player 2 plays {player2Card}");
+
+            if (player1Card.Value > player2Card.Value)
+            {
+                Console.WriteLine("Player 1 wins the round!");
+                player1Deck.Add(player2Card);
+                player1Deck.Add(player1Card);
+            }
+            else if (player2Card.Value > player1Card.Value)
+            {
+                Console.WriteLine("Player 2 wins the round!");
+                player2Deck.Add(player1Card);
+                player2Deck.Add(player2Card);
+            }
+            else
+            {
+                Console.WriteLine("War!");
+                HandleWar(player1Deck, player2Deck);
+            }
+
+            player1Deck.RemoveAt(0);
+            player2Deck.RemoveAt(0);
+        }
+
+        static void HandleWar(List<Card> player1Deck, List<Card> player2Deck)
+        {
+            if (player1Deck.Count < 4 || player2Deck.Count < 4)
+            {
+                Console.WriteLine("Not enough cards for war. Game over.");
+                return;
+            }
+
+            List<Card> warPile = new List<Card>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                warPile.Add(player1Deck);
+                warPile.Add(player2Deck);
+                player1Deck.RemoveAt(0);
+                player2Deck.RemoveAt(0);
+            }
+
+            Card player1WarCard = warPile[warPile.Count - 2];
+            Card player2WarCard = warPile[warPile.Count - 1];
+
+            Console.WriteLine($"Player 1 plays {player1WarCard} for war");
+            Console.WriteLine($"Player 2 plays {player2WarCard} for war");
+
+            if (player1WarCard.Value > player2WarCard.Value)
+            {
+                Console.WriteLine("Player 1 wins the war!");
+                player1Deck.AddRange(warPile);
+            }
+            else if (player2WarCard.Value > player1WarCard.Value)
+            {
+                Console.WriteLine("Player 2 wins the war!");
+                player2Deck.AddRange(warPile);
+            }
+            else
+            {
+                Console.WriteLine("War continues!");
+                HandleWar(player1Deck, player2Deck);
+            }
+        }
+    }
+
+    class Card
+    {
+        public int Value { get; set; }
+        public string Suit { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Value} of {Suit}";
+        }
+    }
+
+    class Deck
+    {
+        public List<Card> Cards { get; set; }
+
+        public Deck()
+        {
+            Cards = new List<Card>();
+            string[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
+            for (int i = 1; i <= 13; i++)
+            {
+                foreach (string suit in suits)
+                {
+                    Cards.Add(new Card { Value = i, Suit = suit });
+                }
+            }
+        }
+
+        public void Shuffle()
+        {
+            Random rand = new Random();
+            for (int i = 0; i < Cards.Count; i++)
+            {
+                int j = rand.Next(Cards.Count);
+                Card temp = Cards[i];
+                Cards[i] = Cards[j];
+                Cards[j] = temp;
+            }
+        }
+    }
+}
