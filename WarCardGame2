@@ -1,0 +1,119 @@
+Sure, I can help with that! The card game War is a simple game where two players each draw a card from their deck, and the player with the higher card wins the round. If the cards are of equal value, a "war" occurs, and additional cards are drawn to determine the winner.
+
+Here's a basic C# program that simulates the card game War:
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+namespace WarCardGame
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Deck deck = new Deck();
+            deck.Shuffle();
+
+            List<Card> player1Deck = new List<Card>();
+            List<Card> player2Deck = new List<Card>();
+
+            for (int i = 0; i < deck.Cards.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    player1Deck.Add(deck.Cards[i]);
+                }
+                else
+                {
+                    player2Deck.Add(deck.Cards[i]);
+                }
+            }
+
+            while (player1Deck.Count > 0 && player2Deck.Count > 0)
+            {
+                Card player1Card = player1Deck;
+                Card player2Card = player2Deck;
+
+                Console.WriteLine($"Player 1 plays {player1Card}");
+                Console.WriteLine($"Player 2 plays {player2Card}");
+
+                if (player1Card.Value > player2Card.Value)
+                {
+                    Console.WriteLine("Player 1 wins the round!");
+                    player1Deck.Add(player2Card);
+                    player1Deck.Add(player1Card);
+                }
+                else if (player2Card.Value > player1Card.Value)
+                {
+                    Console.WriteLine("Player 2 wins the round!");
+                    player2Deck.Add(player1Card);
+                    player2Deck.Add(player2Card);
+                }
+                else
+                {
+                    Console.WriteLine("War!");
+                    // Handle war scenario
+                }
+
+                player1Deck.RemoveAt(0);
+                player2Deck.RemoveAt(0);
+            }
+
+            if (player1Deck.Count > 0)
+            {
+                Console.WriteLine("Player 1 wins the game!");
+            }
+            else
+            {
+                Console.WriteLine("Player 2 wins the game!");
+            }
+        }
+    }
+
+    class Card
+    {
+        public int Value { get; set; }
+        public string Suit { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Value} of {Suit}";
+        }
+    }
+
+    class Deck
+    {
+        public List<Card> Cards { get; set; }
+
+        public Deck()
+        {
+            Cards = new List<Card>();
+            string[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
+            for (int i = 1; i <= 13; i++)
+            {
+                foreach (string suit in suits)
+                {
+                    Cards.Add(new Card { Value = i, Suit = suit });
+                }
+            }
+        }
+
+        public void Shuffle()
+        {
+            Random rand = new Random();
+            for (int i = 0; i < Cards.Count; i++)
+            {
+                int j = rand.Next(Cards.Count);
+                Card temp = Cards[i];
+                Cards[i] = Cards[j];
+                Cards[j] = temp;
+            }
+        }
+    }
+}
+```
+
+This program creates a deck of cards, shuffles it, and then splits it between two players. The players draw cards from their decks, and the player with the higher card wins the round. If the cards are of equal value, a "war" occurs, which you can handle by adding additional logic.
+
+Feel free to modify and expand the program to suit your needs! If you have any questions or need further assistance, just let me know.
