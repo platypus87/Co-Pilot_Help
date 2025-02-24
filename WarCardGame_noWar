@@ -1,0 +1,130 @@
+using System;
+using System.Collections.Generic;
+
+namespace WarCardGame
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var deck = new Deck();
+            deck.Shuffle();
+
+            var player1 = new Player("Player 1");
+            var player2 = new Player("Player 2");
+
+            deck.Deal(player1, player2);
+
+            while (player1.Cards.Count > 0 && player2.Cards.Count > 0)
+            {
+                var card1 = player1.DrawCard();
+                var card2 = player2.DrawCard();
+
+                Console.WriteLine($"{player1.Name} draws {card1}");
+                Console.WriteLine($"{player2.Name} draws {card2}");
+
+                if (card1.Value > card2.Value)
+                {
+                    player1.WinCards(card1, card2);
+                    Console.WriteLine($"{player1.Name} wins this round.\n");
+                }
+                else if (card2.Value > card1.Value)
+                {
+                    player2.WinCards(card1, card2);
+                    Console.WriteLine($"{player2.Name} wins this round.\n");
+                }
+                else
+                {
+                    Console.WriteLine("War!\n");
+                    // Handle war logic here if needed
+                }
+            }
+
+            if (player1.Cards.Count > player2.Cards.Count)
+                Console.WriteLine($"{player1.Name} wins the game!");
+            else if (player2.Cards.Count > player1.Cards.Count)
+                Console.WriteLine($"{player2.Name} wins the game!");
+            else
+                Console.WriteLine("The game is a draw!");
+        }
+    }
+
+    class Card
+    {
+        public int Value { get; private set; }
+        public string Suit { get; private set; }
+
+        public Card(int value, string suit)
+        {
+            Value = value;
+            Suit = suit;
+        }
+
+        public override string ToString()
+        {
+            return $"{Value} of {Suit}";
+        }
+    }
+
+    class Deck
+    {
+        private List<Card> cards = new List<Card>();
+
+        public Deck()
+        {
+            var suits = new[] { "Hearts", "Diamonds", "Clubs", "Spades" };
+            for (int value = 1; value <= 13; value++)
+            {
+                foreach (var suit in suits)
+                {
+                    cards.Add(new Card(value, suit));
+                }
+            }
+        }
+
+        public void Shuffle()
+        {
+            var rand = new Random();
+            for (int i = cards.Count - 1; i > 0; i--)
+            {
+                int j = rand.Next(i + 1);
+                var temp = cards[i];
+                cards[i] = cards[j];
+                cards[j] = temp;
+            }
+        }
+
+        public void Deal(Player player1, Player player2)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i % 2 == 0)
+                    player1.Cards.Add(cards[i]);
+                else
+                    player2.Cards.Add(cards[i]);
+            }
+        }
+    }
+
+    class Player
+    {
+        public string Name { get; private set; }
+        public Queue<Card> Cards { get; private set; } = new Queue<Card>();
+
+        public Player(string name)
+        {
+            Name = name;
+        }
+
+        public Card DrawCard()
+        {
+            return Cards.Dequeue();
+        }
+
+        public void WinCards(Card card1, Card card2)
+        {
+            Cards.Enqueue(card1);
+            Cards.Enqueue(card2);
+        }
+    }
+}
